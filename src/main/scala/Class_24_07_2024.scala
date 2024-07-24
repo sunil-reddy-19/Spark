@@ -32,6 +32,23 @@ object Class_24_07_2024 {
     println(out)
 
 
+    val totalMarks = studentMarks.flatMap(x => x._2).sum
+    val totalAvg = studentMarks.flatMap(x => x._2).sum/studentMarks.count(_ => true)
+
+    println("Total Marks of all Students: " + totalMarks)
+    println("Avg of all students: " + totalAvg)
+
+
+    val tup = (1,2,3,4,5)
+    println(tup._1)
+
+    val mapVar = Map("id" -> List(1,2,3),
+    "Name" -> List("a","b","c"))
+
+    println(mapVar)
+    println(mapVar("id"))
+
+
 
   }
 
