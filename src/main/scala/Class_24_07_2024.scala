@@ -32,22 +32,6 @@ object Class_24_07_2024 {
     println(out)
 
 
-    val totalMarks = studentMarks.flatMap(x => x._2).sum
-    val totalAvg = studentMarks.flatMap(x => x._2).sum/studentMarks.count(_ => true)
-    println(totalMarks)
-    println(totalAvg)
-
-
-    println(studentMarks.count(x => true))
-
-
-    val tup = (1,2,2,3,4,5)
-    println(tup)
-    println(tup._1)
-
-
-
-
 
   }
 
