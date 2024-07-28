@@ -15,10 +15,15 @@ object Reduce_Fun {
     arg.reduceLeft((a, b) => if (a > b) a else b)
   }
 
+  def max_num(arg:List[Int]): Int = {
+    arg.reduce((a,b) => a max b)
+  }
+
   def main(args:Array[String]): Unit = {
     greatest(List(1,25,3,4,5,60,99,19))
     val out = greatest_reduce_fun(List(1,25,3,4,5,60,99,19))
     println("Output from reduceLeft: " + out)
+    println(max_num(List(1,23,45,6,143,67,99)))
   }
 
 }
