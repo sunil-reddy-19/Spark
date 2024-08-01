@@ -1,0 +1,2 @@
+2020-09-02,Chennai,True
+2020-09-02,Bengaluru,False

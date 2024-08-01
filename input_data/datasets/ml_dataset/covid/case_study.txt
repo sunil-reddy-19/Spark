@@ -1,0 +1,10 @@
+1. Store the statewise testing data in adls
+2. Create a powerbi dashboard connecting directly into ADLS
+3. the dashboard should show a line chart with the number of positive cases over time
+4. the state should be a filter into the dashboard
+5. submit the following:
+	a. pbix file
+	b. screenshot of adls connection details
+
+
+	
