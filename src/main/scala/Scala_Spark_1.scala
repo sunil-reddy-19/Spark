@@ -70,7 +70,10 @@ object Scala_Spark_1 {
     val df11 = df.select($"name",explode($"knownLanguages").as("knownLanguages"),$"properties")
     df1.show()
     val df2 = df11.select($"name",$"knownLanguages",explode($"properties"))
-    val df3 = df2.withColumnRenamed("key","attributte").withColumnRenamed("value","color")
+    //val df3 = df2.withColumnRenamed("key","attributte").withColumnRenamed("value","color")
+    val df3 = df2.withColumnsRenamed(Map("key"->"attributte","value"->"color"))
+    println("df3 data ")
+    df3.show()
 
     df11.select($"name",$"knownLanguages",$"properties.hair".as("hair_color"),$"properties.eye".as("eye_color")).show()
 
