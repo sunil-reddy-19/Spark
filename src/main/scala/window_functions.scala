@@ -1,4 +1,4 @@
-import org.apache.spark.sql.catalyst.expressions.Lag
+
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.{Dataset, SparkSession, functions}
 import org.apache.spark.sql.functions._
