@@ -48,16 +48,16 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
       lpad(split(col("Order Date"),"/").getItem(2),4,"20").as("Year"),$"Category",$"Sub-Category",$"Quantity",$"Profit")
 
 
+    //removing the $ sign from profit column
+    df_sales_sel = df_sales_sel.withColumn("Profit_New",regexp_replace(col("Profit"),"[$]","").cast("Double"))
 
-    df_sales_sel = df_sales_sel.withColumn("Profit_New",regexp_replace(col("Profit"),"[$]","").cast("Int"))
+    //df_sales_sel.printSchema()
 
-    df_sales_sel.printSchema()
+    //filtering the data which is returned
+    //var df_sales_sel_filter = df_sales_sel.where(col("Returns").contains("No"))
 
 
-    var df_sales_sel_filter = df_sales_sel.where(col("Returns").contains("No"))
-
-    //df_sales_sel_filter.show()
-
+    //Joining the sales with return DF and filtering the data which is returned
     var df_sales_sel_NotReturn = df_sales_sel.join(df_return,df_sales_sel("Order ID") === df_return("Order ID"),"left").filter(col("Returned").isNull)
 
 
@@ -65,8 +65,30 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
 
     var df_output = df_sales_sel_NotReturn.groupBy($"Year",$"Month",$"Category",$"Sub-Category").agg(sum($"Quantity").as("Total Quantity Sold"),sum($"Profit_New").as("Total Profit"))
 
-    df_output.orderBy("Year","Month").show()
+    df_output = df_output.orderBy("Year","Month","Category","Sub-Category")
 
+
+    //  Unit Test
+
+    val df_spe_MMYY = df_sales_sel_NotReturn.filter(col("Year") === "2012" && col("Month") === "01")
+
+    val df_spe_MMYY_cate = df_spe_MMYY.filter(col("Category") === "Technology" && col("Sub-Category") === "Phones")
+
+    df_spe_MMYY_cate.show()
+
+    val count = df_spe_MMYY_cate.count()
+
+    println(f"count of specific category{Technology/Phones of 01/2012}: " + count)
+
+    val df_unit_output = df_spe_MMYY_cate.groupBy($"Year",$"Month",$"Category",$"Sub-Category").agg(sum($"Quantity").as("Total Quantity Sold"),sum($"Profit_New").as("Total Profit"))
+
+    df_unit_output.show()
+
+   //df_unit_output("Total Profit").equalTo("123")
+
+    val df_output_actual_unit = df_output.filter(col("Year") === "2012" && col("Month") === "01" && col("Category") === "Technology" && col("Sub-Category") === "Phones")
+
+    df_output_actual_unit.show()
 
 
 
