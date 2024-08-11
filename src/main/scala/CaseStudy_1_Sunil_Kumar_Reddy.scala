@@ -2,6 +2,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.expressions._
+import org.apache.logging.log4j._
 
 
 
@@ -25,6 +26,7 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
 
     //initializing the spark session through spark_init() function
     val spark = spark_init()
+    spark.sparkContext.setLogLevel("ERROR")
 
     import spark.implicits._
 
@@ -66,6 +68,10 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
     var df_output = df_sales_sel_NotReturn.groupBy($"Year",$"Month",$"Category",$"Sub-Category").agg(sum($"Quantity").as("Total Quantity Sold"),sum($"Profit_New").as("Total Profit"))
 
     df_output = df_output.orderBy("Year","Month","Category","Sub-Category")
+
+    //Writing into File with partitions
+
+    df_output.write.option("header","true").partitionBy("Year","Month").mode("overWrite").csv("output_data/CaseStudy_1")
 
 
     //  Unit Test
