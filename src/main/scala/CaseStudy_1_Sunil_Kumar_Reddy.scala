@@ -71,7 +71,7 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
 
     //Writing into File with partitions
 
-    df_output.write.option("header","true").partitionBy("Year","Month").mode("overWrite").csv("output_data/CaseStudy_1")
+    //df_output.write.option("header","true").partitionBy("Year","Month").mode("overWrite").csv("output_data/CaseStudy_1")
 
 
     //  Unit Test
@@ -95,6 +95,26 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
     val df_output_actual_unit = df_output.filter(col("Year") === "2012" && col("Month") === "01" && col("Category") === "Technology" && col("Sub-Category") === "Phones")
 
     df_output_actual_unit.show()
+
+    val df_unitTest_comp = df_output_actual_unit.join(df_unit_output,
+      df_output_actual_unit("Year") === df_unit_output("Year") && df_output_actual_unit("Month") === df_unit_output("Month") &&
+        df_output_actual_unit("Category") === df_unit_output("Category") &&
+        df_output_actual_unit("Sub-Category") === df_unit_output("Sub-Category"),"left").select(df_output_actual_unit("Year"),df_output_actual_unit("Month"),
+      df_output_actual_unit("Category"),df_output_actual_unit("Sub-Category"),df_output_actual_unit("Total Quantity Sold"),
+      df_output_actual_unit("Total Profit"),df_unit_output("Total Quantity Sold").as("RightTB_Total_Quantity_Sold"),
+      df_unit_output("Total Profit").as("RightTB_Total_Profit"))
+
+    df_unitTest_comp.show()
+
+    var a = df_unitTest_comp.map{ x =>
+
+      if (x(5) == x(7)) "Unit Test Passes" else "Unit Test Failed"
+
+    }
+
+    a.foreach(println)
+
+
 
 
 
