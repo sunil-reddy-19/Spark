@@ -36,6 +36,11 @@ df_filter_NonReturn = (df_filter_NonReturn.withColumn("Month",split(col("Order D
 
 df_filter_NonReturn.show()
 
-df_grp_sel = df_filter_NonReturn.select("Year","Month","Category","Sub-Category","Quantity","Profit_New")
+df_grp_sel = df_filter_NonReturn.select("Year","Month","Category","Sub-Category",cast("Int","Quantity"),cast("float","Profit_New"))
 
 df_grp_sel.show()
+
+df_Sum_Quamt_Profit = df_grp_sel.groupby("Year","Month","Category","Sub-Category").agg(sum("Quantity").alias("Total Quantity Sold"),sum("Profit_New").alias("Total Profit"))
+df_Sum_Quamt_Profit = df_Sum_Quamt_Profit.orderBy("Year","Month","Category","Sub-Category")
+df_Sum_Quamt_Profit.show()
+
