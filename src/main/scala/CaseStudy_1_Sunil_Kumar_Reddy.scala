@@ -23,9 +23,6 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
   }
 
 
-  //Unit Test Case Function
-
-
 
 
   def main(args:Array[String]): Unit = {
@@ -118,7 +115,7 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
 
     }
 
-    //a.foreach(println)
+    a.foreach(println)
 
     //val out = unit_TestCase(df_sales_sel_NotReturn,df_output,"2012","01","Technology","Phones")
 
