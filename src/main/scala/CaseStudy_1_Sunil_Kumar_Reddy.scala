@@ -140,7 +140,7 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
 
     //Writing into File with partitions
 
-    //df_output.write.option("header","true").partitionBy("Year","Month").mode("overWrite").csv("output_data/CaseStudy_1")
+    df_output.write.option("header","true").partitionBy("Year","Month").mode("overWrite").csv("output_data/CaseStudy_1")
 
 
     //  Testing the Data by unitTest funcation
