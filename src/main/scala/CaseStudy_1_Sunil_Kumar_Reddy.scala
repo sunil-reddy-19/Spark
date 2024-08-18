@@ -22,6 +22,67 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
 
   }
 
+  def unitTest(spark:SparkSession,df_Source:DataFrame,df_return:DataFrame,df_Target:DataFrame,year:String,month:String,category:String,sub_category:String): Unit = {
+
+    import spark.implicits._
+
+    var df_Source_unitTest = df_Source.select($"Order ID",$"Returns",lpad(split(col("Order Date"),"/").getItem(0),2,"0").as("Month"),
+      lpad(split(col("Order Date"),"/").getItem(2),4,"20").as("Year"),$"Category",$"Sub-Category",$"Quantity",$"Profit")
+
+    var df_Source_Sel_UnitTest = df_Source_unitTest.filter(col("Year") === year && col("Month") === month && col("Category") === category &&
+    col("Sub-Category") === sub_category)
+
+    var df_Source_UT_NR = df_Source_Sel_UnitTest.join(df_return,df_Source_Sel_UnitTest("Order ID") === df_return("Order ID"),"left").filter(col("Returned").isNull)
+
+    df_Source_UT_NR = df_Source_UT_NR.withColumn("Profit_New",regexp_replace(col("Profit"),"[$]","").cast("Double"))
+
+    var df_Source_UT_NR_Output = df_Source_UT_NR.groupBy($"Year",$"Month",$"Category",$"Sub-Category").agg(sum($"Quantity").as("Total Quantity Sold"),sum($"Profit_New").as("Total Profit"))
+
+    //df_Source_UT_NR_Output.show()
+
+    var df_Target_UT = df_Target.filter(col("Year") === year && col("Month") === month &&
+    col("Category") === category && col("Sub-Category") === sub_category)
+
+    //df_Target_UT.show()
+
+    val df_unitTest_comp = df_Target_UT.join(df_Source_UT_NR_Output,
+      df_Target_UT("Year") === df_Source_UT_NR_Output("Year") && df_Target_UT("Month") === df_Source_UT_NR_Output("Month") &&
+        df_Target_UT("Category") === df_Source_UT_NR_Output("Category") &&
+        df_Target_UT("Sub-Category") === df_Source_UT_NR_Output("Sub-Category"),"left").select(df_Target_UT("Year"),df_Target_UT("Month"),
+      df_Target_UT("Category"),df_Target_UT("Sub-Category"),df_Target_UT("Total Quantity Sold"),
+      df_Target_UT("Total Profit"),df_Source_UT_NR_Output("Total Quantity Sold").as("RightTB_Total_Quantity_Sold"),
+      df_Source_UT_NR_Output("Total Profit").as("RightTB_Total_Profit"))
+
+    // Test case data
+    println("Printing the unit test case DataFrame.....")
+    df_unitTest_comp.show()
+    println("\n")
+
+
+    var testResult = df_unitTest_comp.map{ x =>
+
+      if ((x(5) == x(7)) && (x(4) == x(6))) {
+        "Unit Test case Passed for category: " + category + " and sub category " + sub_category + " for date " + year + "/" + month
+      }
+
+      else {
+        "Unit Test case Failed for category: " + category + " and sub category " + sub_category + " for date " + year + "/" + month
+      }
+
+    }
+
+    println("---------- Unit Case Result -------------- ")
+    println("\n")
+
+    testResult.foreach(println)
+
+    println("\n")
+    println("---------- Unit Case Result -------------- ")
+
+
+
+  }
+
 
 
 
@@ -34,32 +95,33 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
     import spark.implicits._
 
 
-    //reading the input files using the fileName function
+
     val filename_sales = "input_data/datasets/CaseStudyData_1/Global Superstore Sales - Global Superstore Sales.csv"
     val filename_return = "input_data/datasets/CaseStudyData_1/Global Superstore Sales - Global Superstore Returns.csv"
 
+    //reading the input files using the fileName function
     var df_sales = fileRead(filename_sales,spark)
 
     var df_return = fileRead(filename_return,spark)
 
+    // Sample data of sales DataFrame
+    println("Sales dataframe sample data.....")
+    println("\n")
     df_sales.show()
-
+    // Sales DataFrame schema
+    println("sales df schema....")
     df_sales.printSchema()
-
+    // return dataframe schema
+    println("return df schema....")
     df_return.printSchema()
 
-    //selecting the required columns for calculation
+    //selecting the required columns for calculation and order date column is splitted into month and year
     var df_sales_sel = df_sales.select($"Order ID",$"Returns",lpad(split(col("Order Date"),"/").getItem(0),2,"0").as("Month"),
       lpad(split(col("Order Date"),"/").getItem(2),4,"20").as("Year"),$"Category",$"Sub-Category",$"Quantity",$"Profit")
 
 
     //removing the $ sign from profit column
     df_sales_sel = df_sales_sel.withColumn("Profit_New",regexp_replace(col("Profit"),"[$]","").cast("Double"))
-
-    //df_sales_sel.printSchema()
-
-    //filtering the data which is returned
-    //var df_sales_sel_filter = df_sales_sel.where(col("Returns").contains("No"))
 
 
     //Joining the sales with return DF and filtering the data which is returned
@@ -72,55 +134,18 @@ object CaseStudy_1_Sunil_Kumar_Reddy {
 
     df_output = df_output.orderBy("Year","Month","Category","Sub-Category")
 
+    println("Printing the Output........")
+    println("\n")
+    df_output.show()
+
     //Writing into File with partitions
 
     //df_output.write.option("header","true").partitionBy("Year","Month").mode("overWrite").csv("output_data/CaseStudy_1")
 
 
-    //  Unit Test
+    //  Testing the Data by unitTest funcation
 
-    val df_spe_MMYY = df_sales_sel_NotReturn.filter(col("Year") === "2012" && col("Month") === "01")
-
-    val df_spe_MMYY_cate = df_spe_MMYY.filter(col("Category") === "Technology" && col("Sub-Category") === "Phones")
-
-    df_spe_MMYY_cate.show()
-
-    val count = df_spe_MMYY_cate.count()
-
-    println(f"count of specific category{Technology/Phones of 01/2012}: " + count)
-
-    val df_unit_output = df_spe_MMYY_cate.groupBy($"Year",$"Month",$"Category",$"Sub-Category").agg(sum($"Quantity").as("Total Quantity Sold"),sum($"Profit_New").as("Total Profit"))
-
-    df_unit_output.show()
-
-   //df_unit_output("Total Profit").equalTo("123")
-
-    val df_output_actual_unit = df_output.filter(col("Year") === "2012" && col("Month") === "01" && col("Category") === "Technology" && col("Sub-Category") === "Phones")
-
-    df_output_actual_unit.show()
-
-    val df_unitTest_comp = df_output_actual_unit.join(df_unit_output,
-      df_output_actual_unit("Year") === df_unit_output("Year") && df_output_actual_unit("Month") === df_unit_output("Month") &&
-        df_output_actual_unit("Category") === df_unit_output("Category") &&
-        df_output_actual_unit("Sub-Category") === df_unit_output("Sub-Category"),"left").select(df_output_actual_unit("Year"),df_output_actual_unit("Month"),
-      df_output_actual_unit("Category"),df_output_actual_unit("Sub-Category"),df_output_actual_unit("Total Quantity Sold"),
-      df_output_actual_unit("Total Profit"),df_unit_output("Total Quantity Sold").as("RightTB_Total_Quantity_Sold"),
-      df_unit_output("Total Profit").as("RightTB_Total_Profit"))
-
-    df_unitTest_comp.show()
-
-    var a = df_unitTest_comp.map{ x =>
-
-      if (x(5) == x(7)) "Unit Test Passes" else "Unit Test Failed"
-
-    }
-
-    a.foreach(println)
-
-    //val out = unit_TestCase(df_sales_sel_NotReturn,df_output,"2012","01","Technology","Phones")
-
-    //println(out)
-
+    unitTest(spark,df_sales,df_return,df_output,"2012","01","Technology","Phones")
 
 
   }
