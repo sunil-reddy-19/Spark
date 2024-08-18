@@ -53,6 +53,10 @@ print("\n")
 df_Sum_Quamt_Profit.show()
 print("\n")
 
+## writing the output DF into files
+
+df_Sum_Quamt_Profit.write.option('header','True').option('inferSchema','True').partitionBy("Year","Month").csv("Output_Files/CaseStudy_1/")
+
 ## Unit Test Case function
 
 def unit_Test(df_source,df_output,year,month,category,sub_category):
