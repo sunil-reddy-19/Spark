@@ -20,7 +20,7 @@ object Streaming_2 {
         .add(new StructField("news", DataTypes.StringType, false))
         .add(new StructField("date_of_news", DataTypes.TimestampType, true))
 
-      val news = spark.readStream.schema(newsSchema).json("file:///C:\\tmp\\news_json")
+      val news = spark.readStream.schema(newsSchema).csv("/Users/sunil_reddy/Scala/Streaming_Data/News_files")
       news
     }
 
@@ -31,9 +31,19 @@ object Streaming_2 {
         .add(new StructField("price_time", DataTypes.TimestampType, true))
 
       val price = spark.readStream.schema(priceSchema)
-        .option("header", "true").csv("file:///C:\\tmp\\price")
+        .option("header", "true").csv("/Users/sunil_reddy/Scala/Streaming_Data/Price_files")
       price
     }
+
+    def join_streaming(spark: SparkSession): Unit = {
+      val priceDf = read_price(spark)
+      val newsDf = read_news(spark)
+      val joinedDf = priceDf.join(newsDf, priceDf.col("ticker") === newsDf.col("ticker"))
+      val query = joinedDf.writeStream.outputMode("append").format("console").start
+      query.awaitTermination()
+    }
+
+    join_streaming(spark)
 
   }
 }
