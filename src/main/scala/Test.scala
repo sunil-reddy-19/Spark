@@ -1,4 +1,5 @@
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
 
 object Test {
   def main(args: Array[String]): Unit = {
@@ -12,6 +13,10 @@ object Test {
 
     val df = spark.read.option("header",value = "True").option("inferSchema",value = "True").csv("input_data/insurance.csv")
     df.show()
+
+
+
+
 
   }
 }
