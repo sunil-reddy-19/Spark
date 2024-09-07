@@ -31,7 +31,7 @@ object CaseStudy_2_Sunil_Kumar_Reddy {
       inputIoTDF
     }
 
-    def readStaticFile(spark,fileName)= {
+    def readStaticFile(spark:SparkSession,fileName:String)= {
       val staticDf:DataFrame = spark
         .read
         .option("header","true")
@@ -49,6 +49,12 @@ object CaseStudy_2_Sunil_Kumar_Reddy {
 
     val IotDF = readIoTData(spark,"/Users/sunil_reddy/Scala/Case_Study_2/IoTStreaming_Input/")
     val StaticDF = readStaticFile(spark,"/Users/sunil_reddy/Scala/Case_Study_2/IoTStatic_File/IoTStaticFile.csv")
+
+    StaticDF.show()
+
+    val output = IotDF.writeStream.outputMode("append").format("console").start()
+
+    output.awaitTermination()
 
 
 
