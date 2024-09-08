@@ -1,3 +1,4 @@
+import org.apache.spark.sql.functions.{avg, expr, window}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types.{DataTypes, StructField, StructType}
 
@@ -51,8 +52,18 @@ object CaseStudy_2_Sunil_Kumar_Reddy {
     val StaticDF = readStaticFile(spark,"/Users/sunil_reddy/Scala/Case_Study_2/IoTStatic_File/IoTStaticFile.csv")
 
     StaticDF.show()
+    val iotDFWindow10 = IotDF.withWatermark("timestamp","5 minutes")
 
-    val output = IotDF.writeStream.outputMode("append").format("console").start()
+    val ioTWindowGrp = iotDFWindow10.groupBy(window($"timestamp","10 minutes"),$"device_id").agg(avg($"temperature").as("Avg_Temp"))
+
+    val ioTJoin = ioTWindowGrp.join(StaticDF,ioTWindowGrp.col("device_id") === StaticDF.col("device_id"),"leftOuter")
+      .drop(StaticDF.col("device_id"))
+
+    val ioTMaxTempDevices = ioTJoin.filter($"Avg_Temp" > $"max_temp")
+
+
+
+    val output = ioTMaxTempDevices.writeStream.outputMode("update").format("console").start()
 
     output.awaitTermination()
 
