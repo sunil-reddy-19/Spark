@@ -52,7 +52,7 @@ object CaseStudy_2_Sunil_Kumar_Reddy {
     val StaticDF = readStaticFile(spark,"/Users/sunil_reddy/Scala/Case_Study_2/IoTStatic_File/IoTStaticFile.csv")
 
     StaticDF.show()
-    val iotDFWindow10 = IotDF.withWatermark("timestamp","5 minutes")
+    val iotDFWindow10 = IotDF.withWatermark("timestamp","10 minutes")
 
     val ioTWindowGrp = iotDFWindow10.groupBy(window($"timestamp","10 minutes"),$"device_id").agg(avg($"temperature").as("Avg_Temp"))
 
