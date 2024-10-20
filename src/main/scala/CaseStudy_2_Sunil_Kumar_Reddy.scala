@@ -44,7 +44,7 @@ object CaseStudy_2_Sunil_Kumar_Reddy {
 
     val spark = init_sparkSession()
 
-    spark.sparkContext.setLogLevel("warn")
+    spark.sparkContext.setLogLevel("ERROR")
 
     import spark.implicits._
 
@@ -66,6 +66,7 @@ object CaseStudy_2_Sunil_Kumar_Reddy {
     val output = ioTMaxTempDevices.writeStream.outputMode("update").format("console").start()
 
     output.awaitTermination()
+
 
 
 
