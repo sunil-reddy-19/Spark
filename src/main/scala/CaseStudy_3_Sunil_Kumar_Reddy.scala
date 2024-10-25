@@ -40,11 +40,11 @@ object CaseStudy_3_Sunil_Kumar_Reddy {
     finalDf.show(false)
     finalDf.printSchema()
     val trainTestDf: Array[DataFrame] = finalDf.randomSplit(Array[Double](0.8, 0.2))
-    val tainDf = trainTestDf(0)
+    val trainDf = trainTestDf(0)
     val testDf = trainTestDf(1)
 
     val lr: LogisticRegression = new LogisticRegression
-    val trainedModel: LogisticRegressionModel = lr.fit(tainDf)
+    val trainedModel: LogisticRegressionModel = lr.fit(trainDf)
     println(trainedModel.coefficients)
     val testPredictionsDf = trainedModel.transform(testDf)
     testPredictionsDf.show()
