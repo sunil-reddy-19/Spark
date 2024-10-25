@@ -18,3 +18,9 @@ libraryDependencies += "org.apache.spark" %% "spark-mllib" % "3.5.0" % "provided
 
 // https://mvnrepository.com/artifact/org.apache.spark/spark-streaming
 libraryDependencies += "org.apache.spark" %% "spark-streaming" % "3.5.0" % "provided"
+
+// https://mvnrepository.com/artifact/com.esotericsoftware/kryo
+libraryDependencies += "com.esotericsoftware" % "kryo" % "3.0.0"
+
+// https://mvnrepository.com/artifact/de.javakaffee/kryo-serializers
+libraryDependencies += "de.javakaffee" % "kryo-serializers" % "0.45"

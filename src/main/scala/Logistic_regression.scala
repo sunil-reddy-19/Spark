@@ -10,12 +10,16 @@ object Logistic_regression {
     def main(args: Array[String]): Unit = {
 
       val spark = SparkSession.builder
-        .appName("Simple Application")
-        .master("local[*]")
+        .appName("Simple_Application")
+        .master("local[1]")
         .getOrCreate()
+
+      spark.sparkContext.setLogLevel("error")
 
       val rawDf = spark.read.option("header", "true").option("inferSchema", "true").csv(diabetesURL)
       val requiredFields = rawDf.na.drop
+
+      rawDf.show()
 
       val fieldsForTraining = requiredFields.selectExpr("cast(Pregnancies as double)", "cast(Glucose as double)", "cast(BloodPressure as double)", "cast(SkinThickness as double)", "cast(Insulin as double)", "cast(BMI as double)", "cast(DiabetesPedigreeFunction as double)", "cast(Age as double)", "cast(Outcome as double)").withColumnRenamed("Outcome", "label")
       fieldsForTraining.show()
